@@ -1,14 +1,18 @@
 import Footer from "../components/Footer";
 import Header from "../components/Header";
 
+import "../css/indexPage.css";
+
 function IndexPage() {
   return (
     <div>
       <Header>상단</Header>
       <main>
-        <div>공지사항/갤러리</div>
-        <div>배너</div>
-        <div>바로가기</div>
+        <div className="layout">
+          <div>공지사항/갤러리</div>
+          <div>배너</div>
+          <div>바로가기</div>
+        </div>
       </main>
       <Footer>하단</Footer>;
     </div>
