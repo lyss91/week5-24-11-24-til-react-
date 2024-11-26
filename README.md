@@ -150,5 +150,64 @@ export default Pop;
 
 ### 2.3. Props 전달 가능
 
-- Emotion 에서 props가 무엇인지 이해 후
+- Emotion 에서 props (Properties 를 축약한 용어) 가 무엇인지 이해 후
 - JSX 에서도 그대로 이해하면 됨.
+- 장점은 응용범위가 넓고, 재사용을 할 수 있다.
+- JSX 컴포넌트 처럼 CSS 컴포넌트입니다.
+- 일반적으로 별도 js 파일로 모아서 팀이 활용한다.
+
+#### 2.3.1 기본형
+
+```js
+const SlideDiv = styled.div`
+  position: relative;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background-color: green;
+`;
+```
+
+#### 2.3.2 props 용
+
+```js
+const PopupTitle = styled.h1`
+  color: hotpink;
+  font-size: ${props => props.size}px;
+  text-align: center;
+`;
+```
+
+- 사용예시
+
+```js
+<PopupTitle style={TitleStyle} size={8}>
+  {title}
+</PopupTitle>
+```
+
+#### 2.3.3 props 기본값 적용
+
+```js
+const BannerDiv = styled.div`
+  position: relative;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: ${props => props.www || 100}px;
+  height: ${props => props.hhh || 100}px;
+  background-color: ${props => props.bg || "red"};
+`;
+```
+
+- 사용예시
+
+```js
+<BannerDiv bg={"yellow"} www={200} hhh={200}>
+        배너
+      </BannerDiv>
+      <BannerDiv bg={"orange"} www={50} hhh={50}>
+        배너 2
+      </BannerDiv>
+      <BannerDiv>배너 3</BannerDiv>
+```
