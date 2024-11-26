@@ -1,10 +1,12 @@
 import { StrictMode } from "react";
 import { createRoot } from "react-dom/client";
-import "./index.css";
-import IndexPage from "./pages/IndexPage";
 
+import Box from "./Box";
+import "./index.css";
 createRoot(document.getElementById("root")).render(
   <StrictMode>
-    <IndexPage></IndexPage>
+    <Box islogin={true}>
+      <h1> 안녕하세요. </h1>
+    </Box>
   </StrictMode>,
 );
