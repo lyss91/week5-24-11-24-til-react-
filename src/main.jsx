@@ -1,12 +1,10 @@
 import { createRoot } from "react-dom/client";
 
-import Box from "./Box";
 import "./index.css";
+import Sample3 from "./state-sample/Sample3";
 
 createRoot(document.getElementById("root")).render(
   <>
-    <Box />
-    <Box />
-    <Box />
+    <Sample3 />
   </>,
 );

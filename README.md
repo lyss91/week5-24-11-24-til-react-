@@ -334,6 +334,320 @@ const renderGoodsEach = datas => {
 
 ## 4. 컴포넌트 state
 
-- 모든 ` 컴포넌트는 state 속성`을 가지고 있습니다.
-- 모든 컴포넌트는 가지고 있는 `state가 바뀌면 화면을 리랜더링` 합니다.
-- 모든 컴포넌트는 웹브라우저 새로고침 하기전까지 `state 를 유지` 합니다.
+- 모든 `컴포넌트는 state 속성`을 가지고 있습니다.
+- 모든 컴포넌트는 가지고 있는 `state 가 바뀌면 화면을 리랜더링`합니다.
+- 모든 컴포넌트는 웹브라우저 새로고침 하기전까지 `state 를 유지`합니다.
+
+### 4.1. 기준을 세워 드릴게요.
+
+- 리액트 컴포넌트에서 사용하시는 변수는 그냥 `useState()` 로 만드세요.
+- 컴포넌트를 변수를 변경해서 리랜더링이 필요한 경우에도 `useState()` 를 만드세요.
+
+### 4.2. State 업데이트 시점문제 해결책
+
+```jsx
+import { useState } from "react";
+
+const Sample0 = () => {
+  console.log("리랜더링");
+  // count 를 State 보관하고, count 리랜더링하기
+  const [count, setCount] = useState(0);
+
+  // 클릭하면 set 으로 리랜더링하겠다.
+  // 연속으로 업데이트는 안됨(비동기라서 함수완료 후 반영)
+  const click = () => {
+    // setCount(count + 1);
+    // setCount(count + 1);
+    setCount(prevCount => prevCount + 1);
+    setCount(prevCount => prevCount + 1);
+  };
+
+  return (
+    <div>
+      <h1>현재점수 : {count}</h1>
+      <div>
+        <button onClick={click}>점수올리기</button>
+      </div>
+    </div>
+  );
+};
+
+export default Sample0;
+```
+
+```jsx
+import { useState } from "react";
+
+const Sample0 = () => {
+  console.log("리랜더링");
+  // count 를 State 보관하고, count 리랜더링하기
+  const [count, setCount] = useState(0);
+
+  const clickAdd = () => {
+    setCount(count + 1);
+  };
+  const clickMinus = () => {
+    if (count <= 0) {
+      return;
+    }
+    setCount(count - 1);
+  };
+  const clickReset = () => {
+    setCount(0);
+  };
+
+  return (
+    <div>
+      <h1>현재점수 : {count}</h1>
+      <div>
+        <button onClick={clickAdd}>점수올리기</button>
+        <button onClick={clickMinus}>점수내리기</button>
+        <button onClick={clickReset}>점수초기화</button>
+      </div>
+    </div>
+  );
+};
+
+export default Sample0;
+```
+
+```jsx
+import { useState } from "react";
+
+const Sample0 = () => {
+  // 사용자가 입력한 정보를 기억하기
+  const [memo, setMemo] = useState("");
+  return (
+    <div>
+      <h1>입력내용 : {memo}</h1>
+      <div>
+        <input
+          type="text"
+          value={memo}
+          onChange={e => setMemo(e.target.value)}
+        />
+      </div>
+    </div>
+  );
+};
+
+export default Sample0;
+```
+
+```jsx
+import { useState } from "react";
+
+const Sample0 = () => {
+  // 할일 목록
+  const [todoList, setTodoList] = useState([]);
+
+  // 지금입력중인 할일
+  const [todo, setTodo] = useState("");
+
+  const clickAdd = () => {
+    // 목록을 만들어서 업데이트
+    setTodoList([...todoList, todo]);
+    setTodo("");
+  };
+
+  return (
+    <div>
+      <h1>입력내용 : {todo}</h1>
+      <div>
+        <input
+          type="text"
+          value={todo}
+          onChange={e => setTodo(e.target.value)}
+        />
+      </div>
+
+      <div>
+        <button onClick={clickAdd}>할일추가</button>
+        {todoList.map((item, index) => {
+          return <div key={index}>{item}</div>;
+        })}
+      </div>
+    </div>
+  );
+};
+
+export default Sample0;
+```
+
+```jsx
+import { useState } from "react";
+
+const Sample1 = () => {
+  const [userName, setUserName] = useState("");
+  const [userEmail, setUserEmail] = useState("");
+  const [userPass, setUserPass] = useState("");
+  const [errorMessage, setErrorMessage] = useState("");
+
+  const handleClick = () => {
+    if (userName === "") {
+      setErrorMessage("이름을 입력하세요.");
+      return;
+    }
+    if (userEmail === "") {
+      setErrorMessage("이메일을 입력하세요.");
+      return;
+    }
+    if (userPass === "") {
+      setErrorMessage("비밀번호를 입력하세요.");
+      return;
+    }
+    console.log("로그인 시도 중입니다.");
+  };
+
+  return (
+    <div>
+      <form>
+        <input
+          type="text"
+          placeholder="이름을 입력해요"
+          value={userName}
+          onChange={e => setUserName(e.target.value)}
+        />
+        <br />
+        <input
+          type="email"
+          placeholder="이메일을 입력해요"
+          value={userEmail}
+          onChange={e => setUserEmail(e.target.value)}
+        />
+        <br />
+        <input
+          type="password"
+          placeholder="비밀번호 입력해요"
+          value={userPass}
+          onChange={e => setUserPass(e.target.value)}
+        />
+        <br />
+        <button type="button" onClick={handleClick}>
+          로그인
+        </button>
+      </form>
+      <div>
+        <div style={{ color: "red" }}>Error : {errorMessage}</div>
+      </div>
+      <div>
+        <div>이름: {userName}</div>
+        <div>이메일: {userEmail}</div>
+        <div>비밀번호: {userPass}</div>
+      </div>
+    </div>
+  );
+};
+
+export default Sample1;
+```
+
+```jsx
+import { useState } from "react";
+
+const Sample1 = () => {
+  // 서버 전송용 데이터 객체 리터럴 관리
+  const [formData, setFormData] = useState({
+    user_name: "",
+    user_email: "",
+    user_pass: "",
+  });
+
+  const [errorMessage, setErrorMessage] = useState("");
+
+  // form 의 태그의 props 를 이용해서 처리한다.
+  const handleChange = e => {
+    // 여기서 처리한다.
+    const { name, value } = e.target;
+    setFormData({ ...formData, [name]: value });
+  };
+
+  const handleClick = () => {
+    if (formData.user_name === "") {
+      setErrorMessage("이름을 입력하세요.");
+      return;
+    }
+    if (formData.user_email === "") {
+      setErrorMessage("이메일을 입력하세요.");
+      return;
+    }
+    if (formData.user_pass === "") {
+      setErrorMessage("비밀번호를 입력하세요.");
+      return;
+    }
+    console.log("로그인 시도 중입니다.");
+  };
+
+  return (
+    <div>
+      <form>
+        <input
+          type="text"
+          name="user_name"
+          placeholder="이름을 입력해요"
+          value={formData.user_name}
+          onChange={e => handleChange(e)}
+        />
+        <br />
+        <input
+          type="email"
+          name="user_email"
+          placeholder="이메일을 입력해요"
+          value={formData.user_email}
+          onChange={e => handleChange(e)}
+        />
+        <br />
+        <input
+          type="password"
+          name="user_pass"
+          placeholder="비밀번호 입력해요"
+          value={formData.user_pass}
+          onChange={e => handleChange(e)}
+        />
+        <br />
+        <button type="button" onClick={handleClick}>
+          로그인
+        </button>
+      </form>
+      <div>
+        <div style={{ color: "red" }}>Error : {errorMessage}</div>
+      </div>
+      <div>
+        <div>이름: {formData.user_name}</div>
+        <div>이메일: {formData.user_email}</div>
+        <div>비밀번호: {formData.user_pass}</div>
+      </div>
+    </div>
+  );
+};
+
+export default Sample1;
+```
+
+```jsx
+import { useState } from "react";
+
+const Sample2 = () => {
+  // 다크모드, 라이트 모드 관리
+  const [isDark, setIsDark] = useState(false);
+  // 화면의 CSS Object
+  const ThemeCSS = {
+    position: "absolute",
+    left: 0,
+    top: 0,
+    width: "110px",
+    height: "5vh",
+    display: "flex",
+    backgroundColor: isDark ? "#000" : "#fff",
+    transition: "all 0.5s",
+  };
+
+  return (
+    <div style={ThemeCSS}>
+      <button onClick={() => setIsDark(!isDark)}>테마변경</button>
+    </div>
+  );
+};
+
+export default Sample2;
+```
