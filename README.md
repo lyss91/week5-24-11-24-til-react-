@@ -200,4 +200,140 @@ switch (fetching) {
 
 ## 3. 컴포넌트 반복
 
+- 샘플 데이터
+
+```js
+const goods = [
+  {
+    id: 100,
+    cate: "과일",
+    goodName: "사과",
+    imgUrl:
+      "http://tourimage.interpark.com/product/tour/00161/A10/500/A1051015_1_980.jpg",
+  },
+  {
+    id: 99,
+    cate: "과일",
+    goodName: "사과",
+    imgUrl:
+      "http://tourimage.interpark.com/product/tour/00161/A10/500/A1051015_1_980.jpg",
+  },
+  {
+    id: 103,
+    cate: "전자제품",
+    goodName: "노트북",
+    imgUrl:
+      "http://tourimage.interpark.com/product/tour/00161/A10/500/A1051015_1_980.jpg",
+  },
+  {
+    id: 1004,
+    cate: "패션",
+    goodName: "바지",
+    imgUrl:
+      "http://tourimage.interpark.com/product/tour/00161/A10/500/A1051015_1_980.jpg",
+  },
+];
+```
+
+```jsx
+<Box fruits={과일} goods={goods} />
+```
+
+### 3.1. 반복해서 JSX 에 출력한다면 `map` 을 사용하자.
+
+- 최소 조건입니다. 모르면 곤란합니다.
+
+```jsx
+import { GoodDetailDiv } from "./styles/components/common/styled-common";
+
+const Box = ({ goods }) => {
+  console.log(goods);
+  return (
+    <div>
+      <h1>여기는 레이아웃</h1>
+      <div>
+        {goods.map(item => {
+          return (
+            <GoodDetailDiv key={item?.id}>
+              <h3>{item?.cate}</h3>
+              <h2>{item?.goodName}</h2>
+              <div>
+                <img src={item?.imgUrl} alt={item?.goodName} />
+              </div>
+            </GoodDetailDiv>
+          );
+        })}
+      </div>
+    </div>
+  );
+};
+
+export default Box;
+```
+
+- 추천
+  : 기능과 화면은 분리를 하려고 노력하자.
+
+```jsx
+import { GoodDetailDiv } from "./styles/components/common/styled-common";
+
+const Box = ({ goods, tour, tickets }) => {
+  // 제품을 렌더링 하는 함수
+  const renderGoods = datas => {
+    const result = datas.map(item => {
+      return (
+        <GoodDetailDiv key={item?.id}>
+          <h3>{item?.cate}</h3>
+          <h2>{item?.goodName}</h2>
+          <div>
+            <img src={item?.imgUrl} alt={item?.goodName} />
+          </div>
+        </GoodDetailDiv>
+      );
+    });
+    return result;
+  };
+
+  return (
+    <div>
+      <h1>여기는 레이아웃</h1>
+      {/* 상품정보 1 */}
+      <div>{renderGoods(goods)}</div>
+      {/* 상품 정보 2 */}
+      <div>{renderGoods(tour)}</div>
+      {/* 상품 정보 3 */}
+      <div>{renderGoods(tickets)}</div>
+    </div>
+  );
+};
+
+export default Box;
+```
+
+### 3.2. 반복문 `forEach` 고려해 보기
+
+```jsx
+// 제품을 렌더링 하는 forEach 함수
+const renderGoodsEach = datas => {
+  const tempArr = [];
+  datas.forEach(item => {
+    const tag = (
+      <GoodDetailDiv key={item?.id}>
+        <h3>{item?.cate}</h3>
+        <h2>{item?.goodName}</h2>
+        <div>
+          <img src={item?.imgUrl} alt={item?.goodName} />
+        </div>
+      </GoodDetailDiv>
+    );
+    tempArr.push(tag);
+  });
+  return tempArr;
+};
+```
+
 ## 4. 컴포넌트 state
+
+- 모든 ` 컴포넌트는 state 속성`을 가지고 있습니다.
+- 모든 컴포넌트는 가지고 있는 `state가 바뀌면 화면을 리랜더링` 합니다.
+- 모든 컴포넌트는 웹브라우저 새로고침 하기전까지 `state 를 유지` 합니다.
