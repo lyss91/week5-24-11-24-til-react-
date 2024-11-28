@@ -651,3 +651,266 @@ const Sample2 = () => {
 
 export default Sample2;
 ```
+
+-sample3.jsx
+
+```jsx
+import styled from "@emotion/styled";
+import { useState } from "react";
+
+const ModalWinDiv = styled.div`
+  position: fixed;
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: 100vh;
+  background-color: rgba(0, 0, 0, 0.8);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 99;
+`;
+
+const Sample3 = () => {
+  const [isOpen, setIsOpen] = useState(false);
+
+  const 보이기 = () => {
+    setIsOpen(true);
+  };
+
+  const 숨기기 = () => {
+    setIsOpen(false);
+  };
+
+  return (
+    <div>
+      <button onClick={보이기}>보기</button>
+
+      {isOpen ? (
+        <ModalWinDiv>
+          <button onClick={숨기기}>보이지마</button>
+        </ModalWinDiv>
+      ) : null}
+
+      {isOpen && (
+        <ModalWinDiv>
+          <button onClick={숨기기}>보이지마</button>
+        </ModalWinDiv>
+      )}
+    </div>
+  );
+};
+
+export default Sample3;
+```
+
+-Sample4
+
+```jsx
+import { useState } from "react";
+
+const Sample4 = () => {
+  const [like, setLike] = useState(0);
+  const [disLike, setDisLike] = useState(0);
+
+  return (
+    <>
+      <div>
+        <span>좋아요{like}</span>
+        <span>싫어요{disLike}</span>
+      </div>
+      <button onClick={() => setLike(like + 1)}>좋아요</button>
+      <button onClick={() => setDisLike(disLike + 1)}>싫어요</button>
+    </>
+  );
+};
+
+export default Sample4;
+```
+
+- Sample5
+
+```jsx
+import styled from "@emotion/styled";
+import { useState } from "react";
+
+const ColorDiv = styled.div`
+  background-color: ${({ bg }) => bg || "red"};
+`;
+
+const Sample5 = () => {
+  const [bgColor, setBgColor] = useState("green");
+  return (
+    <div>
+      <ColorDiv bg={bgColor}>색상이 바뀌어요.</ColorDiv>
+      <button onClick={() => setBgColor("red")}>빨강</button>
+      <button onClick={() => setBgColor("yellow")}>노랑</button>
+      <button onClick={() => setBgColor("blue")}>파랑</button>
+    </div>
+  );
+};
+
+export default Sample5;
+```
+
+## 5. 이벤트 처리
+
+- 가장 흔하게 이벤트를 사용하는 곳이 Form 태그 입니다.
+
+### 5.1. 회원가입 폼 만들어 보기
+
+```jsx
+const EventSample1 = () => {
+  const handleClickId = gogogo => {
+    alert("아이디중복체크", gogogo);
+  };
+  return (
+    <div>
+      <h1>회원가입</h1>
+      <form>
+        {/* 숨긴 쿼리스트링 */}
+        <input type="hidden" name="now" value="1" />
+        {/* 회원가입 기본정보 입력영역 */}
+        <fieldset>
+          <legend>기본정보</legend>
+          <div>
+            <label htmlFor="userId">아이디</label>
+            <input
+              type="text"
+              name="userid"
+              id="userId"
+              className="userId"
+              placeholder="아이디를 입력하세요."
+              maxLength={8}
+              minLength={4}
+            />
+            <button type="button">아이디 중복검사</button>
+          </div>
+          <div>
+            <label htmlFor="userEmail">이메일</label>
+            <input
+              type="email"
+              name="useremail"
+              id="userEmail"
+              placeholder="이메일을 입력하세요."
+            />
+          </div>
+          <div>
+            <label htmlFor="userPass">비밀번호</label>
+            <input
+              type="password"
+              name="userpass"
+              id="userPass"
+              placeholder="비밀번호를 입력하세요."
+              maxLength={16}
+              minLength={8}
+            />
+          </div>
+          <div>
+            <label htmlFor="userPassConfirm">비밀번호확인</label>
+            <input
+              type="password"
+              name="userpassconfirm"
+              id="userPassConfirm"
+              placeholder="비밀번호 확인을 입력하세요."
+              maxLength={16}
+              minLength={8}
+            />
+          </div>
+        </fieldset>
+        {/* 회원가입 부가정보 입력영역 */}
+        <fieldset>
+          <legend htmlFor="age">부가정보</legend>
+          <div>
+            <label>나이</label>
+            <input type="number" name="age" id="age" defaultValue={0} />
+          </div>
+          <div>
+            <label>성별</label>
+            <input
+              type="radio"
+              name="gender"
+              id="male"
+              value="male"
+              defaultChecked
+            />
+            <label htmlFor="male">남성</label>
+            <input type="radio" name="gender" id="femail" value="femail" />
+            <label htmlFor="femail">여성</label>
+            <input type="radio" name="gender" id="etc" value="etc" />
+            <label htmlFor="etc">기타</label>
+          </div>
+
+          <div>
+            <label htmlFor="area">지역</label>
+            <select name="area" id="area" defaultValue="daegu">
+              <option value="">전체</option>
+              <option value="daegu">대구</option>
+              <option value="busan">부산</option>
+              <option value="gwangju">광주</option>
+              <option value="jejus">제주</option>
+            </select>
+          </div>
+
+          <div>
+            <label htmlFor="birthday">생일</label>
+            <input
+              type="date"
+              name="birthday"
+              id="birthday"
+              defaultValue="2024-11-28"
+            />
+          </div>
+
+          <div>
+            <label htmlFor="sogo">자기소개</label>
+            <textarea
+              name="soge"
+              id="soge"
+              rows={4}
+              cols={50}
+              style={{ resize: "vertical" }}
+            ></textarea>
+          </div>
+          <div>
+            <label htmlFor="pic">이미지</label>
+            <input
+              type="file"
+              name="pic"
+              id="pic"
+              accept="image/png, image/jpeg"
+            />
+          </div>
+          <div>
+            <label htmlFor="doc">문서</label>
+            <input type="file" name="doc" id="doc" multiple />
+          </div>
+          <div>
+            <label>취미</label>
+            <input
+              type="checkbox"
+              value="골프"
+              name="hobby"
+              id="ho1"
+              defaultChecked
+            />
+            <label htmlFor="ho1">골프</label>
+            <input type="checkbox" value="운동" name="hobby" id="ho2" />
+            <label htmlFor="ho2">운동</label>
+            <input type="checkbox" value="공부" name="hobby" id="ho3" />
+            <label htmlFor="ho3">공부</label>
+            <input type="checkbox" value="요리" name="hobby" id="ho4" />
+            <label htmlFor="ho4">요리</label>
+          </div>
+        </fieldset>
+        <div>
+          <button type="reset">다시작성</button>
+          <button type="submit">회원가입</button>
+        </div>
+      </form>
+    </div>
+  );
+};
+
+export default EventSample1;
+```

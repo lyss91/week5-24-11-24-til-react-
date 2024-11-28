@@ -1,28 +1,31 @@
 import { useState } from "react";
-// 버튼 클릭하면 팝업창 보이기
-// 팝업창의 닫기 버튼 클릭하면 창닫기
+
 const Sample3 = () => {
-  const [open, setOpen] = useState(false);
+  const [open, falseOpen] = useState(0);
+
+  const popOpen = () => {
+    falseOpen(1);
+  };
+
+  const popClose = () => {
+    falseOpen(0);
+  };
+
   const ButtonCSS = {
     display: open ? "block" : "none",
     position: "absolute",
     left: 0,
-    top: 0,
+    top: "50px",
     width: "100%",
-    height: "5vh",
+    height: "50vh",
+    backgroundColor: "red",
   };
-  const popOpen = () => {
-    setOpen(true);
-  };
-  const popClose = () => {
-    setOpen(false);
-  };
+
   return (
     <div>
       <button onClick={() => popOpen()}>보기</button>
-      <div style={ButtonCSS}>
-        <button onClick={popClose}>닫기</button>
-      </div>
+      <div style={ButtonCSS}></div>
+      <button onClick={popClose}>닫기</button>
     </div>
   );
 };
