@@ -914,3 +914,450 @@ const EventSample1 = () => {
 
 export default EventSample1;
 ```
+
+### 5.2. 이벤트 만들고 처리하기
+
+- 리액트에서 제공되는 규칙은 `on카멜케이스` 입니다.
+- 리액트에서 제공되는 규칙은 `on이벤트={하고싶은일}` 입니다.
+- `onClick`
+- `onChange`
+- `onSubmit`
+- `onKeyDown`
+
+- `onKeyUp`
+- `onMouseEnter`
+- `onMouseLeave`
+
+```jsx
+import { useEffect, useState } from "react";
+
+const EventSample1 = () => {
+  const initData = {
+    now: 1,
+    userid: "",
+    userpass: "",
+    userpassconfirm: "",
+    age: 0,
+    gender: "male",
+    area: "daegu",
+    birthday: "2024-11-28",
+    soge: "",
+    pic: null,
+    doc: null,
+    hobby: ["골프"],
+  };
+  const [formData, setFormData] = useState(initData);
+
+  const [idCheck, setIdCheck] = useState(false);
+
+  useEffect(() => {
+    console.log(formData);
+    return function () {};
+  }, [formData]);
+
+  const handleChange = event => {
+    const { name, value, type, checked, files } = event.target;
+    if (type === "checkbox") {
+      setFormData({
+        ...formData,
+        [name]: checked
+          ? [...formData.hobby, value]
+          : formData.hobby.filter(item => item !== value),
+      });
+      return;
+    }
+
+    if (name === "pic") {
+      setFormData({
+        ...formData,
+        [name]: files[0],
+      });
+      return;
+    }
+    if (name === "doc") {
+      setFormData({
+        ...formData,
+        [name]: [...files],
+      });
+      return;
+    }
+
+    setFormData({
+      ...formData,
+      [name]: value,
+    });
+  };
+  // const handleClick = event => {};
+  const handleIdCheck = () => {
+    alert(`${formData.userid} 를 들고 백엔드 갔다왔더니 중복 아니랍니다.`);
+    setIdCheck(true);
+  };
+
+  const handleSubmit = event => {
+    // 기본 동작 즉, 웹브라우저로 action 하려는 것 막고 유효성 검사
+    event.preventDefault();
+  };
+  const handleKeyDown = event => {
+    if (event.key === "Enter") {
+      if (formData.userpass !== formData.userpassconfirm) {
+        alert("비밀번호가 서로 다릅니다.");
+        setFormData({ ...formData, [event.target.name]: "" });
+      }
+    }
+  };
+
+  return (
+    <div>
+      <h1>회원가입</h1>
+      <form onSubmit={event => handleSubmit(event)}>
+        {/* 숨긴 쿼리스트링 */}
+        <input type="hidden" name="now" value={formData.now} />
+        {/* 회원가입 기본정보 입력영역 */}
+        <fieldset>
+          <legend>기본정보</legend>
+          <div>
+            <label htmlFor="userId">아이디</label>
+            <input
+              type="text"
+              name="userid"
+              value={formData.userid}
+              id="userId"
+              className="userId"
+              placeholder="아이디를 입력하세요."
+              maxLength={8}
+              minLength={4}
+              onChange={event => handleChange(event)}
+            />
+            <button type="button" onClick={() => handleIdCheck()}>
+              아이디 중복검사
+            </button>
+          </div>
+          <div>
+            <label htmlFor="userEmail">이메일</label>
+            <input
+              type="email"
+              name="useremail"
+              value={formData.useremail}
+              id="userEmail"
+              placeholder="이메일을 입력하세요."
+              onChange={event => handleChange(event)}
+            />
+          </div>
+          <div>
+            <label htmlFor="userPass">비밀번호</label>
+            <input
+              type="password"
+              name="userpass"
+              value={formData.userpass}
+              id="userPass"
+              placeholder="비밀번호를 입력하세요."
+              maxLength={16}
+              minLength={8}
+              onChange={event => handleChange(event)}
+            />
+          </div>
+          <div>
+            <label htmlFor="userPassConfirm">비밀번호확인</label>
+            <input
+              type="password"
+              name="userpassconfirm"
+              value={formData.userpassconfirm}
+              id="userPassConfirm"
+              placeholder="비밀번호 확인을 입력하세요."
+              maxLength={16}
+              minLength={8}
+              onChange={event => handleChange(event)}
+              onKeyDown={event => handleKeyDown(event)}
+            />
+          </div>
+        </fieldset>
+        {/* 회원가입 부가정보 입력영역 */}
+        <fieldset>
+          <legend htmlFor="age">부가정보</legend>
+          <div>
+            <label>나이</label>
+            <input
+              type="number"
+              name="age"
+              id="age"
+              value={formData.age}
+              onChange={event => handleChange(event)}
+            />
+          </div>
+          <div>
+            <label>성별</label>
+            <input
+              type="radio"
+              name="gender"
+              id="male"
+              value="male"
+              // defaultChecked
+              checked={formData.gender === "male"}
+              onChange={event => handleChange(event)}
+            />
+            <label htmlFor="male">남성</label>
+            <input
+              type="radio"
+              name="gender"
+              id="femail"
+              value="femail"
+              checked={formData.gender === "femail"}
+              onChange={event => handleChange(event)}
+            />
+            <label htmlFor="femail">여성</label>
+            <input
+              type="radio"
+              name="gender"
+              id="etc"
+              value="etc"
+              checked={formData.gender === "etc"}
+              onChange={event => handleChange(event)}
+            />
+            <label htmlFor="etc">기타</label>
+          </div>
+
+          <div>
+            <label htmlFor="area">지역</label>
+            <select
+              name="area"
+              id="area"
+              value={formData.area}
+              //defaultValue={formData.area}
+              onChange={event => handleChange(event)}
+            >
+              <option value="">전체</option>
+              <option value="daegu">대구</option>
+              <option value="busan">부산</option>
+              <option value="gwangju">광주</option>
+              <option value="jejus">제주</option>
+            </select>
+          </div>
+
+          <div>
+            <label htmlFor="birthday">생일</label>
+            <input
+              type="date"
+              name="birthday"
+              value={formData.birthday}
+              id="birthday"
+              //defaultValue={formData.birthday}
+              onChange={event => handleChange(event)}
+            />
+          </div>
+
+          <div>
+            <label htmlFor="sogo">자기소개</label>
+            <textarea
+              name="soge"
+              id="soge"
+              value={formData.soge}
+              rows={4}
+              cols={50}
+              style={{ resize: "vertical" }}
+              onChange={event => handleChange(event)}
+            ></textarea>
+          </div>
+          <div>
+            <label htmlFor="pic">이미지</label>
+            <input
+              type="file"
+              name="pic"
+              id="pic"
+              // value={formData.pic}
+              accept="image/png, image/jpeg"
+              onChange={event => handleChange(event)}
+            />
+          </div>
+          <div>
+            <label htmlFor="doc">문서</label>
+            <input
+              type="file"
+              name="doc"
+              // value={formData.doc}
+              id="doc"
+              multiple
+              onChange={event => handleChange(event)}
+            />
+          </div>
+
+          <div>
+            <label>취미</label>
+            {["골프", "운동", "공부", "요리"].map((item, index) => {
+              return (
+                <span key={index}>
+                  <input
+                    type="checkbox"
+                    value={item}
+                    name="hobby"
+                    id={`ho${index + 1}`}
+                    // defaultChecked
+                    checked={formData.hobby.includes(item)}
+                    onChange={event => handleChange(event)}
+                  />
+                  <label htmlFor={`ho${index + 1}`}>{item}</label>
+                </span>
+              );
+            })}
+          </div>
+        </fieldset>
+        <div>
+          <button
+            type="button"
+            onClick={() => {
+              setFormData(initData);
+            }}
+          >
+            다시작성
+          </button>
+          <button type="submit">회원가입</button>
+        </div>
+      </form>
+    </div>
+  );
+};
+
+export default EventSample1;
+```
+
+-EventSample2;
+
+```jsx
+import { useState } from "react";
+
+const EventSample2 = () => {
+  const testWord = "안녕하세요.";
+  const [userWord, setUserWord] = useState("");
+  const [feedback, setFeedback] = useState("🎆시작하시요.");
+  const [gameTime, setGameTime] = useState(0);
+  const [start, setStart] = useState(false);
+  const [timeId, setTimeId] = useState(null);
+
+  const gameStart = () => {
+    if (start === false) {
+      // 타이머 만들자.
+      setStart(true);
+      const 식별자 = setInterval(() => {
+        // 아래는 상태값 gameTime 을 참조한다.
+        // 아래는 실행될 당시의 값이다.
+        // 업데이트 하고 있는데 다시 업데이트를 하면 오류다.
+        // 그러나 오류가 나도 띄워주지 않고 묻어버린다.
+        // 즉시 반영이 안되는 경우가 존재한다.
+        // 이유는 언제 업데이트가 되었는지를 보장할 수 없다.
+        // setGameTime(gameTime + 1);
+
+        // 아래 방식은 state 를 업데이트 할 때
+        // 값이 아니라 `업데이트 함수` 를 전달하는 것.
+        // 아래는 함수라서 항상 실행을 보장합니다.
+        // 아래의 문장을 한글로 고쳐보면
+        // setGameTime(보관값 => { return 보관값 + 1} );
+        setGameTime(prev => prev + 1);
+      }, 1000);
+      setTimeId(식별자);
+    }
+  };
+  // gameStart();
+
+  const gameIng = event => {
+    setUserWord(event.target.value);
+    // 비교해서 업데이트
+    if (event.target.value === testWord) {
+      setFeedback("잘~~ 작성하고 계시네요(●'◡'●)");
+    } else {
+      setFeedback("오타에요(┬┬﹏┬┬)");
+    }
+  };
+  const gameResult = event => {
+    if (event.key === "Enter") {
+      alert("고생했어요.");
+      // 타이머 지우기
+      clearInterval(timeId);
+    }
+  };
+  return (
+    <div>
+      <h1>키보드 타이핑 연습 웹 앱서비스</h1>
+      <p>
+        다음문장을 작성하시오: <b>{testWord}</b>
+      </p>
+      <button onClick={() => gameStart()}>게임시작</button>
+      <div>{gameTime}</div>
+      <div>{feedback}</div>
+      <div>
+        <label htmlFor="userinput">입력글</label>
+        <input
+          value={userWord}
+          id="userinput"
+          onChange={event => {
+            gameIng(event);
+          }}
+          onKeyDown={event => gameResult(event)}
+        />
+      </div>
+    </div>
+  );
+};
+
+export default EventSample2;
+```
+
+## 6. useEffect
+
+### 6.1. 특징
+
+- 리랜더링에서 제외됨. (컴포넌트가 랜더링된 뒤에 실행)
+- 백엔드 API 호출시 좋은 자리 : 자료를 만들고 화면을 보여주는 흐름.
+- 컴포넌트 최초 데이터 셋팅 : state 값에 기본값 넣기
+
+```
+1. 먼저 백엔드에 todo-list 데이터를 전달 요청(request)을 함
+2. 전달받을 데이터를 state에 담는다.
+```
+
+### 6.2. 최초 컴포넌트 보일 때 용도
+
+- 최초 화면에 컴포넌트 보이면 딱! 한번 실행(함수, setState 한번만...)
+- 최초 화면에 컴포넌트 보일때 필요로 한 정보를 `백엔드 데이터 가지고 올때` 딱! 한 번 실행
+- window.addEventList("resize", function(){});
+- document.querySelctior("")
+
+```jsx
+useEffect(함수, state 들의 의존성 배열);
+useEffect( () => { 하고싶은일 }, []);
+```
+
+### 6.3. 컴포넌트의 `state가 변하는 것`을 `체크`하고자 할 때
+
+- 리랜더링 될 때
+- 화면에 변화가 있을 때 마다 덩달아 해야할 일 지정할 때
+
+```js
+useEffect( () => { 감시하다가 할 일 }, [state1, state2, state3..])
+```
+
+### 6.4. 컴포넌트가 화면에서 사라질 때
+
+- 마지막 처리하고 자 하는 내용 실행
+
+```js
+ useEffect( () => {
+  // 할일....
+  // 할일....
+  return () => {
+    마지막 할일
+    마지막 할일
+  }
+ }, [state1, state2, ...])
+```
+
+### 6.5. 아래 코드를 이해해 보자.
+
+```jsx
+useEffect(() => {
+  window.addEventListner("resize", () => console.log("해해"));
+  window.addEventListner("mousemove", () => console.log("해해"));
+  return () => {
+    window.removeEventLister("resize", () => console.log("해해"));
+    window.removeEventLister("mousemove", () => console.log("해해"));
+  };
+}, []);
+```
