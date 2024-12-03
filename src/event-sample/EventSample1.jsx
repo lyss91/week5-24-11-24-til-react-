@@ -168,12 +168,12 @@ const EventSample1 = () => {
             <input
               type="radio"
               name="gender"
-              id="femail"
-              value="femail"
-              checked={formData.gender === "femail"}
+              id="female"
+              value="female"
+              checked={formData.gender === "female"}
               onChange={event => handleChange(event)}
             />
-            <label htmlFor="femail">여성</label>
+            <label htmlFor="female">여성</label>
             <input
               type="radio"
               name="gender"
