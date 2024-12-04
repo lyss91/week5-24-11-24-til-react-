@@ -1,420 +1,333 @@
-# fetch 로 REST API 연동해 보기
+# react-router-dom
 
-- `async ... await` 로 비동기처리를 기준
+- 리액트에는 http 경로를 이용한 화면이동이 없습니다.
+- 통상 http 경로를 `라우터` 라고 합니다.
+- `라우터` 를 사용하려면 `react-router-dom` 을 사용해야합니다.
 
-## 1. 사전 조건은 백엔드가 활성화 되어 있어야 해요.
+## 1. 참고사항
 
-- 터미널에 prompt 현재 폴더가 `server` 여야 함.
-- `npm run start` 실행
-- `http://192.168.0.66:5000/todos`
-- `{"title":"" "content":""}`
+- 링크
 
-## 2. fetch 로 데이터 연동하기
-
-- `jwt` 인증없이 진행인 경우
-- `javaScript web token` 을 말함.
-- `/src/todos/` 폴더 생성
-- `/src/todos/Todo.jsx` 파일 생성
-- `/src/main.jsx` 임폴트
-
-```jsx
-import { useEffect, useState } from "react";
-
-const Todo = () => {
-  const initData = {
-    title: "",
-    content: "",
-  };
-  // 화면 갱신용 state
-  const [todoList, setTodoList] = useState([]);
-  const [formData, setFormData] = useState(initData);
-
-  // 내용 수정용 state
-  const initPutData = {
-    id: "",
-    title: "",
-    content: "",
-  };
-  const [putData, setPutData] = useState(initPutData);
-
-  // 전체목록
-  const getTodos = async () => {
-    console.log("서버접속 후 전체 할일 가져옮");
-    try {
-      const res = await fetch(`http://192.168.0.66:5000/todos`);
-      const data = await res.json();
-      //새로 리랜더링하라!
-      setTodoList(data);
-    } catch (error) {
-      console.log(`에러입니다 : ${error}`);
-      console.log(`잠시 후 다시 시도해주세요.`);
-    }
-  };
-  // 상세내용보기
-  const getTodoDetail = async _id => {
-    try {
-      const res = await fetch(`http://192.168.0.66:5000/todos/${_id}`);
-      const data = await res.json();
-      console.log(data);
-    } catch (error) {
-      console.log(`네트워크 오류입니다. ${error}`);
-      console.log(`잠시 후 다시 시도해 주세요.`);
-    }
-  };
-  // 할일등록 1개
-  const postTodo = async () => {
-    try {
-      const res = await fetch(`http://192.168.0.66:5000/todos`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(formData),
-      });
-
-      alert("할일이 등록되었습니다.");
-      getTodos();
-      setFormData(initData);
-    } catch (error) {
-      console.log(`네트웍이 불안정합니다. ${error}`);
-      console.log(`잠시후 다시 시도해 주세요.`);
-    }
-  };
-  // 할일삭제 1개
-  const deleteTodo = async _id => {
-    try {
-      const res = await fetch(`http://192.168.0.66:5000/todos/${_id}`, {
-        method: "DELETE",
-      });
-      alert("데이터가 성공적으로 삭제되었습니다");
-      getTodos();
-    } catch (error) {
-      console.log(`네트워크 오류입니다. ${error}`);
-      console.log(`잠시 후 다시 시도해 주세요.`);
-    }
-  };
-  // 할일 1개의 내용 수정
-  const putTodo = async () => {
-    const { id, title, content } = putData;
-    try {
-      await fetch(`http://192.168.0.66:5000/todos/${id}`, {
-        method: "PUT",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          title,
-          content,
-        }),
-      });
-      alert("수정되었습니다.");
-      // 다시읽기
-      getTodos();
-    } catch (error) {
-      console.log(`서버가 불안정합니다. ${error}`);
-      console.log(`잠시 후 시도해주세요`);
-    }
-  };
-
-  // 이벤트 핸들링
-  const handleChange = e => {
-    const { name, value } = e.target;
-    setFormData({ ...formData, [name]: value });
-  };
-  const handleSubmit = e => {
-    // 웹브라우저 새로갱신 안되요.
-    e.preventDefault();
-    if (formData.title === "") {
-      alert("제목을 입력하세요.");
-      return;
-    }
-    if (formData.content === "") {
-      alert("내용을 입력하세요.");
-      return;
-    }
-    postTodo();
-  };
-  // 상세보기 핸들링
-  const handleClickDetail = _item => {
-    setPutData({ ..._item });
-  };
-  // 수정용 핸들링
-  const handleChangePut = e => {
-    const { name, value } = e.target;
-    setPutData({ ...putData, [name]: value });
-  };
-  const handleSubmitPut = e => {
-    // 아래가 없으면 새로 고침되면서 모든 임시 초기화 된다.
-    // 반드시 필요.
-    e.preventDefault();
-    if (putData.title === "") {
-      alert("제목이 필요합니다.");
-      return;
-    }
-    if (putData.content === "") {
-      alert("내용이 필요합니다.");
-      return;
-    }
-
-    putTodo();
-  };
-
-  // 컴포넌트 보이면 최초 딱 한번 실행
-  useEffect(() => {
-    // 처음에 todo 로 이동하면, 할일 목록 전체 가져 옮
-    getTodos();
-
-    return () => {};
-  }, []);
-  return (
-    <div>
-      <h1>Todo 등록</h1>
-      <div>
-        <form onSubmit={e => handleSubmit(e)}>
-          <div>
-            <label>제목</label>
-            <input
-              name="title"
-              value={formData.title}
-              onChange={e => handleChange(e)}
-            />
-          </div>
-          <div>
-            <label>내용</label>
-            <textarea
-              name="content"
-              value={formData.content}
-              onChange={e => handleChange(e)}
-            ></textarea>
-          </div>
-          <div>
-            <button type="submit">등록</button>
-          </div>
-        </form>
-      </div>
-      <h2>상세보기</h2>
-      <div>
-        <form onSubmit={e => handleSubmitPut(e)}>
-          <div>
-            <label>선택한 제목</label>
-            <input
-              type="text"
-              name="title"
-              value={putData.title}
-              onChange={e => handleChangePut(e)}
-            />
-          </div>
-          <div>
-            <label>선택한 내용</label>
-            <textarea
-              name="content"
-              value={putData.content}
-              onChange={e => handleChangePut(e)}
-            ></textarea>
-          </div>
-          <div>
-            <button type="submit">수정</button>
-          </div>
-        </form>
-      </div>
-      <h2>Todo List</h2>
-      <div>
-        {todoList.map(item => {
-          return (
-            <div key={item.id}>
-              {item.id} : {item.title}
-              <button
-                type="button"
-                onClick={() => {
-                  deleteTodo(item.id);
-                }}
-              >
-                삭제
-              </button>
-              <button type="button" onClick={() => setPutData({ ...item })}>
-                수정
-              </button>
-            </div>
-          );
-        })}
-      </div>
-    </div>
-  );
-};
-
-export default Todo;
+```html
+<a href="라우터">이동</a>
 ```
 
-- member.jsx
+- form 의 action
+
+```html
+<form action="라우터">...</form>
+```
+
+## 2. URI 의 구성
+
+- `http://localhost:3000/todo/login?id=hong&pass=123`
+
+### 2.1. Protocol (네트워킹을 위한 약속)
+
+- `http://`
+
+```
+HTTP (HyperText Transfer Protocol)
+ : 웹 브라우저와 서버 간의 데이터 전송.
+
+HTTPS (HTTP Secure)
+ : HTTP에 보안(SSL/TLS)을 추가한 프로토콜.
+
+FTP (File Transfer Protocol)
+ : 파일 전송에 사용.
+
+SMTP (Simple Mail Transfer Protocol)
+ : 이메일 전송.
+
+IMAP (Internet Message Access Protocol)
+ : 이메일 수신(서버에서 관리).
+
+POP3 (Post Office Protocol 3)
+ : 이메일 수신(다운로드 후 로컬 관리).
+
+DNS (Domain Name System)
+ : 도메인 이름을 IP 주소로 변환.
+
+DHCP (Dynamic Host Configuration Protocol)
+ : 동적 IP 주소 할당.
+```
+
+### 2.2. 도메인 (Domain)
+
+- `localhost`
+- 일반적으로의 대화에서는 `홈페이지 주소` 로 이해
+- 가끔 코딩할때 `도메인`을 지켜서 `업무를 식별`해서 개발하세요.
+- `DNS` 는 `Domain Name System` 로서 IP 에 글자이름 부여
+
+### 2.3. Port 번호
+
+- `:3000`
+- `80` port 는 기본 포트입니다. (도메인으로 접속시 자동연결)
+  : 80 은 안적으면 작동
+
+### 2.4. Path
+
+- 경로 `/todo/login`
+- 경로 `/member/login`
+
+### 2.5. Query String
+
+- `?~~~~~`
+- 질의문 (질문하고 결과 받겠다.)
+
+## 3. URI 를 이용해서 React 에서 활용
+
+- `react-router-dom`
+- https://www.npmjs.com/package/react-router-dom
+- https://reactrouter.com/start/framework/route-module
+- 설치 `npm i react-router-dom`
+
+## 4. 활용 전에 먼저 고민해 보자.
+
+- Site Map 을 고민하자.
+- 샘플
+
+```
+http://localhost:3000/            첫페이지
+
+http://localhost:3000/about          소개
+http://localhost:3000/about/mission  미션
+http://localhost:3000/about/team     팀
+
+http://localhost:3000/service     서비스
+
+
+http://localhost:3000/blog           블로그
+http://localhost:3000/blog/design    디자인
+http://localhost:3000/blog/design/1           REST_API
+http://localhost:3000/blog/design/deatil?id=1 query-string
+
+http://localhost:3000/blog/market    마케팅
+http://localhost:3000/blog/news      뉴스
+
+
+http://localhost:3000/portfolio   포트폴리오
+http://localhost:3000/contact     연락하기
+
+
+```
+
+## 5. Route 에 맞게 pages 폴더 구성하기
+
+- `http://localhost:3000/` Root 페이지 또는 라우터
+  : `src/pages/Index.jsx` 를 말합니다.
+
+- `http://localhost:3000/about`
+  : `src/pages/about/Index.jsx` 를 말합니다.
+
+- `http://localhost:3000/about/team`
+  : `src/pages/about/Team.jsx` 를 말합니다.
+
+- `http://localhost:3000/service`
+  : `src/pages/service/Index.jsx` 를 말합니다.
+
+- `http://localhost:3000/service/now`
+  : `src/pages/service/Now.jsx` 를 말합니다.
+
+- `http://localhost:3000/blog`
+  : `src/pages/blog/Index.jsx` 를 말합니다.
+
+- `http://localhost:3000/blog/1`
+  : `src/pages/blog/Detail.jsx` 를 말합니다.
+
+- `http://localhost:3000/blog/list?id=1&cate=design`
+  : `src/pages/blog/List.jsx` 를 말합니다.
+
+## 6. Route 적용은 App.js에 하기로 해요.
+
+- 아래를 지켜주셔야 합니다.
+- `as` 를 확인하세요.
+- `Router > Routes > Route `
 
 ```jsx
-import { useState } from "react";
-import { useEffect } from "react";
+import { BrowserRouter, Route, Routes } from "react-router-dom";
+// as 는 alias 라는 문법으로 별칭을 지음.
+// 위에 import 안에 내용만 바꾸면 밑에는 손도 안대두됨
+function App() {
+  return (
+    <BrowserRouter>
+      <Routes>
+        <Route />
+        <Route />
+        <Route />
+      </Routes>
+    </BrowserRouter>
+  );
+}
 
-const Member = () => {
-  const API_URL = "http://localhost:5000/member";
-  // member 목록 관리
-  const [memberList, setMemberList] = useState([]);
-  // 서버에 등록할 데이터 관리
-  const initData = { email: "", pw: "" };
-  const [formData, setFormData] = useState(initData);
-  // 선택된 멤버 관리
-  const selectData = { id: "", email: "", pw: "" };
-  const [selectUser, setSelectUser] = useState(selectData);
-  //   현재 선택된 멤버 수정중??
-  const [isEdit, setIsEdit] = useState(false);
-  const handleChangeEdit = e => {
-    const { name, value } = e.target;
-    setSelectUser({ ...selectUser, [name]: value });
-  };
-  const handleSubmitEdit = e => {
-    // 웹브라우저 새로고침 방지
-    e.preventDefault();
-    putMember({ ...selectUser });
-  };
+export default App;
+```
 
-  // 이벤트 핸들러 함수
-  const handleChange = e => {
-    const { name, value } = e.target;
-    setFormData({ ...formData, [name]: value });
-  };
-  const handleSubmit = e => {
-    // 웹브라우저 새로고침 방지
-    e.preventDefault();
-    postMember({ ...formData });
-  };
-  //   API 메서드
-  const getMembers = async () => {
-    try {
-      const res = await fetch(API_URL);
-      const data = await res.json();
-      setMemberList(data);
-    } catch (error) {
-      console.log(error);
-    }
-  };
-  const getMember = () => {};
-  const deleteMember = async id => {
-    try {
-      await fetch(`${API_URL}/${id}`, { method: "DELETE" });
-      getMembers();
-    } catch (error) {
-      console.log(error);
-    }
-  };
-  const postMember = async item => {
-    try {
-      await fetch(API_URL, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(item),
-      });
-      getMembers();
-      setFormData(initData);
-    } catch (error) {
-      console.log(error);
-    }
-  };
-  const putMember = async item => {
-    try {
-      await fetch(`${API_URL}/${item.id}`, {
-        method: "PUT",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(item),
-      });
+### 6.1. `기본`으로 작업하신다면
 
-      getMembers();
-      setIsEdit(false);
-    } catch (error) {
-      console.log(error);
-    }
-  };
-  useEffect(() => {
-    getMembers();
-    return () => {};
-  }, []);
+```jsx
+import { BrowserRouter as Router, Route, Routes } from "react-router-dom";
+// as 는 alias 라는 문법으로 별칭을 지음
+import HomePage from "./pages/Index";
+import AboutPage from "./pages/about/Index";
+import TeamPage from "./pages/about/Team";
+import ServicePage from "./pages/service/Index";
+import NowPage from "./pages/service/Now";
+import BlogPage from "./pages/blog/Index";
+import BlogDetailPage from "./pages/blog/Detail";
+import BlogListPage from "./pages/blog/List";
+function App() {
+  return (
+    <Router>
+      <Routes>
+        <Route path="/" element={<HomePage />} />
+        <Route path="/about" element={<AboutPage />} />
+        <Route path="/about/team" element={<TeamPage />} />
+        <Route path="/service" element={<ServicePage />} />
+        <Route path="/service/now" element={<NowPage />} />
+        <Route path="/blog" element={<BlogPage />} />
+        <Route path="/blog/1" element={<BlogDetailPage />} />
+        <Route path="/blog/list?id=1&cate=design" element={<BlogListPage />} />
+      </Routes>
+    </Router>
+  );
+}
+
+export default App;
+```
+
+### 6.2. 중첩(Nested) 라우터
+
+- `일반적`으로 활용해요.
+- `<Route index component={컴포넌트} />` 주의해요.
+
+```jsx
+import { BrowserRouter as Router, Route, Routes } from "react-router-dom";
+// as 는 alias 라는 문법으로 별칭을 지음
+import HomePage from "./pages/Index";
+import AboutPage from "./pages/about/Index";
+import TeamPage from "./pages/about/Team";
+import ServicePage from "./pages/service/Index";
+import NowPage from "./pages/service/Now";
+import BlogPage from "./pages/blog/Index";
+import BlogDetailPage from "./pages/blog/Detail";
+import BlogListPage from "./pages/blog/List";
+function App() {
+  return (
+    <Router>
+      <Routes>
+        <Route path="/" element={<HomePage />} />
+
+        <Route path="/about">
+          <Route index element={<AboutPage />} />
+          <Route path="team" element={<TeamPage />} />
+        </Route>
+
+        <Route path="/service">
+          <Route index element={<ServicePage />} />
+          <Route path="now" element={<NowPage />} />
+        </Route>
+
+        <Route path="/blog">
+          <Route index element={<BlogPage />} />
+          <Route path="1" element={<BlogDetailPage />} />
+          <Route path="list?id=1&cate=design" element={<BlogListPage />} />
+        </Route>
+      </Routes>
+    </Router>
+  );
+}
+
+export default App;
+```
+
+### 6.3. 존재하지 않는 path 로 접근시 처리법
+
+- path 는 `*` 입니다. 제일 하단에 배치 권장
+- `<Route path="*" element={<NotFound />} />`
+
+```jsx
+import { BrowserRouter as Router, Route, Routes } from "react-router-dom";
+// as 는 alias 라는 문법으로 별칭을 지음
+import HomePage from "./pages/Index";
+import AboutPage from "./pages/about/Index";
+import TeamPage from "./pages/about/Team";
+import ServicePage from "./pages/service/Index";
+import NowPage from "./pages/service/Now";
+import BlogPage from "./pages/blog/Index";
+import BlogDetailPage from "./pages/blog/Detail";
+import BlogListPage from "./pages/blog/List";
+import NotFound from "./pages/404";
+function App() {
+  return (
+    <Router>
+      <Routes>
+        <Route path="/" element={<HomePage />} />
+
+        <Route path="/about">
+          <Route index element={<AboutPage />} />
+          <Route path="team" element={<TeamPage />} />
+        </Route>
+
+        <Route path="/service">
+          <Route index element={<ServicePage />} />
+          <Route path="now" element={<NowPage />} />
+        </Route>
+
+        <Route path="/blog">
+          <Route index element={<BlogPage />} />
+          <Route path="1" element={<BlogDetailPage />} />
+          <Route path="list?id=1&cate=design" element={<BlogListPage />} />
+        </Route>
+
+        {/* 존재하지 않는 페이지 */}
+        <Route path="*" element={<NotFound />} />
+      </Routes>
+    </Router>
+  );
+}
+
+export default App;
+```
+
+## 7. 라우터에 `Params` 전달하기
+
+- `Param` 단어를 ✨ 꼭! 알아야 합니다.
+- 백엔드 연동시 필수 내용!
+- `패스/param`
+- `http://localhost:5173/good/10` : 10 이 `param`
+- `http://localhost:5173/blog/21` : 21 이 `param`
+
+- 보낼 때는 이렇게 (App.jsx)
+
+```jsx
+<Route path=":id" element={<BlogDetailPage />} />
+```
+
+- 받을 때는 (Detail.jsx)
+
+```jsx
+import { useParams } from "react-router-dom";
+
+function Detail() {
+  const { id } = useParams();
+  console.log(id);
+  // const id = 1; param 을 보내고 받는 것으로 수정
   return (
     <div>
-      <h1>Member 관리</h1>
-      <div>
-        {memberList.map(item => {
-          return (
-            <div key={item.id}>
-              <div
-                onClick={() => setSelectUser({ ...item })}
-                style={{ cursor: "pointer", backgroundColor: "yellow" }}
-              >
-                {item.id} {item.email}
-              </div>
-              <button onClick={() => deleteMember(item.id)}>삭제</button>
-            </div>
-          );
-        })}
-      </div>
-      <h2>새 멤버 추가</h2>
-      <div>
-        <form onSubmit={e => handleSubmit(e)}>
-          이메일
-          <input
-            type="email"
-            name="email"
-            value={formData.email}
-            onChange={e => handleChange(e)}
-          />
-          <br />
-          비번
-          <input
-            type="password"
-            name="pw"
-            value={formData.pw}
-            onChange={e => handleChange(e)}
-          />
-          <br />
-          <button type="submit">회원가입</button>
-        </form>
-      </div>
-      <h3>상세 회원정보</h3>
-      {selectUser?.id !== "" ? (
-        <div>
-          <form onSubmit={e => handleSubmitEdit(e)}>
-            이메일
-            <input
-              type="email"
-              name="email"
-              value={selectUser.email}
-              readOnly={!isEdit} // !붙이면 반대로 false 에서 true로
-              disabled={!isEdit}
-              onChange={e => handleChangeEdit(e)}
-            />
-            <br />
-            비번
-            <input
-              type="password"
-              name="pw"
-              value={selectUser.pw}
-              readOnly={!isEdit} // 수정 안되게 한다. = {isEdit} 넣으면 가능해짐
-              disabled={!isEdit}
-              onChange={e => handleChangeEdit(e)}
-            />
-            <br />
-            {isEdit ? (
-              <>
-                <button type="submit">정보수정 등록</button>
-                <button type="button" onClick={() => setIsEdit(false)}>
-                  정보수정 취소
-                </button>
-              </>
-            ) : (
-              <button type="button" onClick={() => setIsEdit(true)}>
-                정보수정
-              </button>
-            )}
-          </form>
-        </div>
-      ) : (
-        "선택된 회원이 없습니다."
-      )}
+      /blog/<b>{id}</b> 블로그 상세 페이지(RestAPI 방식)
     </div>
   );
-};
+}
 
-export default Member;
+export default Detail;
+```
+
+## 8. 쿼리 스트링 활용하기
+
+- `?` 를 무엇이라고 했나요? `Search` 한다. `질의문`
+
+```jsx
+ <Route path="list?id=1&cate=design" element={<BlogListPage />} />
+        </Route>
 ```
