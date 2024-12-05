@@ -40,7 +40,10 @@ export default [
         "warn",
         { allowConstantExport: true },
       ], // React Fast Refresh 규칙
-      "prettier/prettier": "warn", // Prettier 규칙 (포매팅 오류를 에러로 표시)
+      "prettier/prettier": "warn",
+      // Prettier 규칙 (포매팅 오류를 에러로 표시)
+      "react/prop-types": "off",
+      //  props 프롭스타입 지정 off 시킨것
     },
   },
 ];

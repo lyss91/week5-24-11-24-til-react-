@@ -1,5 +1,9 @@
-function index() {
-  return <div>index</div>;
+function Index({ title, year }) {
+  return (
+    <div>
+      {title} 첫페이지 : {year} src\pages\index.jsx{" "}
+    </div>
+  );
 }
 
-export default index;
+export default Index;
