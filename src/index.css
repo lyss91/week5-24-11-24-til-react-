@@ -1,3 +1,13 @@
+/* 글꼴 설정 */
+@font-face {
+  font-family: "chab";
+  src: url("/chab.ttf");
+}
+@font-face {
+  font-family: "bbb";
+  src: url("/ddag.ttf");
+}
+
 :root {
   font-family: Inter, system-ui, Avenir, Helvetica, Arial, sans-serif;
   line-height: 1.5;
@@ -23,6 +33,7 @@ a:hover {
 }
 
 body {
+  font-family: "aaa";
   margin: 0;
 }
 

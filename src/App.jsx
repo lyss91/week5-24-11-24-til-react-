@@ -4,7 +4,7 @@ import Loading from "./components/Loading";
 
 const Footer = lazy(() => import("./components/Footer"));
 const Header = lazy(() => import("./components/Header"));
-const NotFound = lazy(() => import("./pages/NotFound"));
+const NotFound = lazy(() => import("./pages/404"));
 const HomePage = lazy(() => import("./pages/Index"));
 const AboutPage = lazy(() => import("./pages/about/Index"));
 const TeamPage = lazy(() => import("./pages/about/Team"));
