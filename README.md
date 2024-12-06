@@ -35,3 +35,8 @@ body {
   font-family: "chab";
 }
 ```
+
+# 빌드하기 (배포하기)
+
+- 배포 버전 생성 : `npm run build`
+- 배포 버전테스트 : `npm run preview`
